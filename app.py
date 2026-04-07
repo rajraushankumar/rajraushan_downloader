@@ -75,10 +75,22 @@ def get_info():
         }
     },
 }
-                
+ ydl_opts = {
+    'cookiefile': 'cookies.txt',
+    'quiet': False,
+    'nocheckcertificate': True,
+    'http_headers': {
+        'User-Agent': 'Mozilla/5.0'
+    },
+    'sleep_interval': 2,
+    'max_sleep_interval': 5
+}
+
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(url, download=False)
 
+with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+    ydl.download([url])
         formats = []
         seen = set()
         for f in info.get('formats', []):
