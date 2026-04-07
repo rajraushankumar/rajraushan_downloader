@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: rajraushan-downloader
+    env: python
+    buildCommand: "pip install --upgrade pip && pip install -r requirements.txt && pip install -U yt-dlp"
+    startCommand: "python app.py"
+    envVars:
+      - key: PORT
+        value: 5000
