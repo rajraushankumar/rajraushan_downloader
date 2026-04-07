@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rajraushan Downloader</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@300;400;500;600;700&family=Great+Vibes&family=Dancing+Script:wght@700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Background -->
+  <div class="bg-layer">
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+    <div class="orb orb3"></div>
+    <div class="grid-overlay"></div>
+  </div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="logo">
+      <span class="logo-icon">⬇</span>
+      <div>
+        <span class="logo-name">RAJRAUSHAN</span>
+        <span class="logo-sub">VIDEO &amp; AUDIO DOWNLOADER</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="header-badge">FREE · FAST · UNLIMITED</div>
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle Theme">
+        <span class="theme-icon" id="themeIcon">🌙</span>
+        <div class="toggle-track">
+          <div class="toggle-knob"></div>
+        </div>
+      </button>
+    </div>
+  </header>
+
+  <!-- Stats Bar -->
+  <div class="stats-bar">
+    <div class="stat-item"><span class="stat-num" data-target="10000000">0</span><span class="stat-label">Downloads</span></div>
+    <div class="stat-divider"></div>
+    <div class="stat-item"><span class="stat-num" data-target="1000">0</span><span class="stat-label">Sites</span></div>
+    <div class="stat-divider"></div>
+    <div class="stat-item"><span class="stat-num" data-target="50">0</span><span class="stat-label">Formats</span></div>
+    <div class="stat-divider"></div>
+    <div class="stat-item"><span class="stat-num" data-target="100">0</span><span class="stat-label">% Free</span></div>
+  </div>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-tag">🔥 YouTube, Instagram, Twitter, TikTok &amp; 1000+ sites supported</div>
+    <h1 class="hero-title">DOWNLOAD<br/><span class="accent">ANYTHING.</span></h1>
+    <p class="hero-sub">Paste any video URL and grab it in MP4, MP3, WebM and more. Zero limits. Zero cost.</p>
+
+    <!-- URL Input -->
+    <div class="search-box" id="searchBox">
+      <div class="search-icon">🔗</div>
+      <input type="text" id="urlInput" placeholder="Paste video URL here... (YouTube, Instagram, TikTok...)" autocomplete="off" />
+      <button class="paste-btn" id="pasteBtn" onclick="pasteFromClipboard()" title="Clipboard se paste karo">📋</button>
+      <button class="fetch-btn" id="fetchBtn" onclick="fetchInfo()">
+        <span id="fetchBtnText">FETCH</span>
+        <div class="btn-shine"></div>
+      </button>
+    </div>
+    <div class="url-examples">
+      Try: <span onclick="setExample('https://www.youtube.com/watch?v=dQw4w9WgXcQ')">YouTube</span>
+      <span onclick="setExample('https://www.instagram.com/reel/example/')">Instagram</span>
+      <span onclick="setExample('https://twitter.com/user/status/123')">Twitter</span>
+      <span onclick="setExample('https://www.tiktok.com/@user/video/123')">TikTok</span>
+    </div>
+  </section>
+
+  <!-- Loading State -->
+  <div class="loading-state" id="loadingState">
+    <div class="loader-ring"></div>
+    <p>Fetching video info...</p>
+  </div>
+
+  <!-- Error State -->
+  <div class="error-state" id="errorState">
+    <div class="error-icon">⚠️</div>
+    <p id="errorMsg">Something went wrong.</p>
+    <button class="reset-btn" style="margin-top:8px" onclick="resetUI()">Try Again</button>
+  </div>
+
+  <!-- Video Info Card -->
+  <div class="info-card" id="infoCard">
+    <div class="card-header">
+      <div class="thumbnail-wrap">
+        <img id="thumbnail" src="" alt="Thumbnail" class="thumbnail" />
+        <div class="thumb-play">▶</div>
+      </div>
+      <div class="video-meta">
+        <h2 id="videoTitle">Video Title</h2>
+        <div class="meta-row">
+          <span class="meta-chip" id="uploaderChip">👤 Uploader</span>
+          <span class="meta-chip" id="durationChip">⏱ 0:00</span>
+          <span class="meta-chip" id="viewsChip">👁 0 views</span>
+        </div>
+        <div class="quality-badges" id="qualityBadges"></div>
+      </div>
+    </div>
+
+    <!-- Format Tabs -->
+    <div class="format-tabs">
+      <button class="tab-btn active" data-tab="video" onclick="switchTab('video')">🎬 VIDEO</button>
+      <button class="tab-btn" data-tab="audio" onclick="switchTab('audio')">🎵 AUDIO</button>
+    </div>
+
+    <!-- Format Grid -->
+    <div class="format-grid" id="formatGrid"></div>
+
+    <!-- Download Progress -->
+    <div class="download-progress" id="downloadProgress">
+      <div class="progress-header">
+        <span id="progressLabel">Downloading...</span>
+        <span id="progressPercent">0%</span>
+      </div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+      <div class="progress-meta">
+        <span id="progressSpeed">Speed: --</span>
+        <span id="progressEta">ETA: --s</span>
+      </div>
+    </div>
+
+    <!-- Download Ready -->
+    <div class="download-ready" id="downloadReady">
+      <div class="ready-icon">✅</div>
+      <p>Download ready! File taiyar hai.</p>
+      <a class="download-link-btn" id="downloadLink" href="#" target="_blank">⬇ SAVE FILE</a>
+      <button class="reset-btn" onclick="resetDownload()">Download Another</button>
+    </div>
+  </div>
+
+  <!-- Download History -->
+  <div class="history-section" id="historySection" style="display:none">
+    <div class="history-header">
+      <h3 class="history-title">📋 Download History</h3>
+      <button class="clear-btn" onclick="clearHistory()">🗑 Clear All</button>
+    </div>
+    <div class="history-list" id="historyList"></div>
+  </div>
+
+  <!-- Features -->
+  <section class="features">
+    <div class="feature-card"><div class="feat-icon">⚡</div><h3>Lightning Fast</h3><p>Direct server-side download at maximum speed.</p></div>
+    <div class="feature-card"><div class="feat-icon">🌐</div><h3>1000+ Sites</h3><p>YouTube, Instagram, Twitter, TikTok, Vimeo and more.</p></div>
+    <div class="feature-card"><div class="feat-icon">🎛</div><h3>Any Format</h3><p>MP4, WebM, MP3, M4A — choose freely.</p></div>
+    <div class="feature-card"><div class="feat-icon">🔒</div><h3>100% Private</h3><p>No logs. No accounts. No tracking.</p></div>
+    <div class="feature-card"><div class="feat-icon">🌙</div><h3>Dark / Light Mode</h3><p>Aankh ki rahat ke liye theme switch karo.</p></div>
+    <div class="feature-card"><div class="feat-icon">📋</div><h3>Clipboard Paste</h3><p>Ek click mein URL paste — typing nahi.</p></div>
+    <div class="feature-card"><div class="feat-icon">📂</div><h3>Download History</h3><p>Saare downloads ka record local mein.</p></div>
+    <div class="feature-card"><div class="feat-icon">🎯</div><h3>Smart Quality</h3><p>Best quality auto-detect aur suggest.</p></div>
+  </section>
+
+
+  <!-- ═══ CREATOR SECTION ═══ -->
+  <section class="creator-section">
+    <div class="creator-bg-glow"></div>
+    <div class="creator-inner">
+
+      <!-- Photo Side -->
+      <div class="creator-photo-wrap">
+        <div class="creator-ring ring1"></div>
+        <div class="creator-ring ring2"></div>
+        <div class="creator-ring ring3"></div>
+        <div class="creator-photo-frame">
+          <img src="/static/profile.jpeg" alt="Rajraushan" class="creator-photo" />
+          <div class="creator-photo-shine"></div>
+        </div>
+        <div class="creator-badge">👨‍💻 Developer</div>
+      </div>
+
+      <!-- Info Side -->
+      <div class="creator-info">
+        <p class="creator-eyebrow">— Built &amp; Designed by</p>
+        <h2 class="creator-name">
+          <span class="creator-name-script">Rajraushan</span>
+        </h2>
+        <div class="creator-name-underline"></div>
+        <p class="creator-bio">
+          Ek passionate developer jo apne tools khud banata hai. 
+          Yeh downloader maine apne liye banaya tha — ab yeh sabke liye hai. 
+          Free, fast, aur bilkul asaan.
+        </p>
+        <div class="creator-tags">
+          <span class="ctag">🐍 Python</span>
+          <span class="ctag">⚗️ Flask</span>
+          <span class="ctag">🎨 CSS</span>
+          <span class="ctag">⚡ JS</span>
+          <span class="ctag">📥 yt-dlp</span>
+        </div>
+        <div class="creator-signature">
+          <svg viewBox="0 0 260 70" xmlns="http://www.w3.org/2000/svg" class="sig-svg">
+            <text x="10" y="55" class="sig-text">Rajraushan</text>
+          </svg>
+        </div>
+
+        <!-- Gmail Contact Button -->
+        <div class="creator-contact">
+          <a href="mailto:rajraushankumar360@gmail.com" class="gmail-btn">
+            <span class="gmail-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20 4H4C2.9 4 2 4.9 2 6V18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V6C22 4.9 21.1 4 20 4Z" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M2 6L12 13L22 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </span>
+            <span class="gmail-text">
+              <span class="gmail-label">Contact Me</span>
+              <span class="gmail-addr">rajraushankumar360@gmail.com</span>
+            </span>
+            <span class="gmail-arrow">→</span>
+          </a>
+          <button class="copy-email-btn" onclick="copyEmail()" title="Email copy karo">📋 Copy</button>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══ CONTACT SECTION ═══ -->
+  <section class="contact-section">
+    <div class="contact-inner">
+      <div class="contact-left">
+        <p class="contact-eyebrow">📬 Get in Touch</p>
+        <h2 class="contact-title">Any Questions?<br/><span class="contact-accent">Mail karo!</span></h2>
+        <p class="contact-desc">Bug report, feedback, ya sirf baat karni ho — main hamesha available hoon. Reply milegi! 😊</p>
+      </div>
+      <div class="contact-right">
+        <a href="mailto:rajraushankumar360@gmail.com" class="contact-mailto-card">
+          <div class="mailto-icon-wrap">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M20 4H4C2.9 4 2 4.9 2 6V18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V6C22 4.9 21.1 4 20 4Z" stroke="currentColor" stroke-width="1.8"/>
+              <path d="M2 6L12 13L22 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="mailto-info">
+            <span class="mailto-label">Gmail</span>
+            <span class="mailto-value">rajraushankumar360@gmail.com</span>
+          </div>
+          <div class="mailto-open">Open ↗</div>
+        </a>
+        <button class="contact-copy-btn" onclick="copyEmail()">
+          <span id="copyBtnText">📋 Email Address Copy Karo</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-creator-credit">
+      <img src="/static/profile.jpeg" alt="Rajraushan" class="footer-creator-avatar" />
+      <span class="footer-creator-name">Rajraushan</span>
+    </div>
+    <p>Built with ❤️ for unlimited downloading. Powered by yt-dlp &amp; Flask.</p>
+    <div class="footer-links">
+      <span onclick="toggleTheme()">🌙 Toggle Theme</span>
+      <span>·</span>
+      <span onclick="clearHistory()">🗑 Clear History</span>
+    </div>
+    <p class="footer-note">Only download content you have the right to. Respect creators.</p>
+  </footer>
+
+  <script src="/static/js/main.js"></script>
+</body>
+</html>
