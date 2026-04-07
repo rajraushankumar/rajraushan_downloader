@@ -62,10 +62,20 @@ def get_info():
 
     try:
         ydl_opts = {
-            'quiet': True,
-            'no_warnings': True,
-            'skip_download': True,
+    'quiet': True,
+    'no_warnings': True,
+    'skip_download': True,
+
+    'http_headers': {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+    },
+    'extractor_args': {
+        'youtube': {
+            'player_client': ['web'],
         }
+    },
+}
+                
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(url, download=False)
 
@@ -135,6 +145,13 @@ def download():
                     'quiet': True,
                     'progress_hooks': [get_progress_hook(task_id)],
                     'no_warnings': True,
+                    'cookiefile': os.path.join(os.path.dirname(os.path.abspath(__file__)), 'cookies.txt'),
+                    'http_headers': {
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+                    },
+                    'extractor_args': {
+                        'youtube': {'player_client': ['web']},
+                    },
                 }
             else:
                 ydl_opts = {
@@ -144,6 +161,13 @@ def download():
                     'progress_hooks': [get_progress_hook(task_id)],
                     'merge_output_format': 'mp4',
                     'no_warnings': True,
+                    'cookiefile': os.path.join(os.path.dirname(os.path.abspath(__file__)), 'cookies.txt'),
+                    'http_headers': {
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+                    },
+                    'extractor_args': {
+                        'youtube': {'player_client': ['web']},
+                    }
                 }
 
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
