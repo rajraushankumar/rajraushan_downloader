@@ -62,35 +62,13 @@ def get_info():
 
     try:
         ydl_opts = {
-    'quiet': True,
-    'no_warnings': True,
-    'skip_download': True,
-
-    'http_headers': {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-    },
-    'extractor_args': {
-        'youtube': {
-            'player_client': ['web'],
+            'quiet': True,
+            'no_warnings': True,
+            'skip_download': True,
         }
-    },
-}
- ydl_opts = {
-    'cookiefile': 'cookies.txt',
-    'quiet': False,
-    'nocheckcertificate': True,
-    'http_headers': {
-        'User-Agent': 'Mozilla/5.0'
-    },
-    'sleep_interval': 2,
-    'max_sleep_interval': 5
-}
-
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(url, download=False)
 
-with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-    ydl.download([url])
         formats = []
         seen = set()
         for f in info.get('formats', []):
@@ -157,13 +135,6 @@ def download():
                     'quiet': True,
                     'progress_hooks': [get_progress_hook(task_id)],
                     'no_warnings': True,
-                    'cookiefile': os.path.join(os.path.dirname(os.path.abspath(__file__)), 'cookies.txt'),
-                    'http_headers': {
-                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-                    },
-                    'extractor_args': {
-                        'youtube': {'player_client': ['web']},
-                    },
                 }
             else:
                 ydl_opts = {
@@ -173,13 +144,6 @@ def download():
                     'progress_hooks': [get_progress_hook(task_id)],
                     'merge_output_format': 'mp4',
                     'no_warnings': True,
-                    'cookiefile': os.path.join(os.path.dirname(os.path.abspath(__file__)), 'cookies.txt'),
-                    'http_headers': {
-                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-                    },
-                    'extractor_args': {
-                        'youtube': {'player_client': ['web']},
-                    }
                 }
 
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -279,5 +243,4 @@ def cleanup():
 threading.Thread(target=cleanup, daemon=True).start()
 
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+    app.run(debug=True, port=5000)
